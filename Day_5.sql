@@ -1,25 +1,45 @@
-/*Pivot the Occupation column in OCCUPATIONS so that each Name is sorted 
-alphabetically and displayed underneath its corresponding Occupation. 
-The output column headers should be Doctor, Professor, Singer, and Actor, respectively.*/
+/*Query a count of the number of cities in CITY 
+having a Population larger than 100,000*/
 
---solution 1, but need remove null
-SELECT *
-FROM
-(SELECT 
-    (CASE WHEN Occupation = "Doctor" THEN Name END) AS Doctor,
-    (CASE WHEN Occupation = "Professor" THEN Name END) AS Professor, 
-    (CASE WHEN Occupation = "Singer" THEN Name END) AS Singer,
-    (CASE WHEN Occupation = "Actor" THEN Name END) AS Actor 
-FROM Occupations
-ORDER BY Name) AS A
+SELECT COUNT(*)
+FROM CITY
+WHERE Population > 100000
 
---solution 2, then do a join
-SELECT DISTINCT(Doctor), 1 AS Value
-FROM
-(SELECT 
-    (CASE WHEN Occupation = "Doctor" THEN Name END) AS Doctor
-FROM Occupations
-ORDER BY Name) A
-WHERE Doctor IS NOT NULL
-ORDER BY Doctor
-OUTER JOIN
+/*Query the total population of all 
+cities in CITY where District is California*/
+
+SELECT SUM(POPULATION)
+FROM CITY
+WHERE DISTRICT LIKE "California"
+
+/*Query the average population of all 
+cities in CITY where District is California.*/
+
+SELECT AVG(POPULATION)
+FROM CITY
+WHERE DISTRICT LIKE "California"
+
+/*Query the average population for all cities 
+in CITY, rounded down to the nearest integer.*/
+
+SELECT FLOOR(AVG(POPULATION))
+FROM CITY
+                 
+/*Query the average population for all cities 
+in CITY, rounded down to the nearest integer.*/
+
+SELECT FLOOR(AVG(POPULATION))
+FROM CITY
+                 
+/*Query the sum of the populations for all Japanese 
+cities in CITY. The COUNTRYCODE for Japan is JPN.*/
+
+SELECT SUM(POPULATION)
+FROM CITY
+WHERE COUNTRYCODE="JPN"
+                 
+/*Query the difference between the 
+maximum and minimum populations in CITY.*/
+
+SELECT MAX(POPULATION) - MIN(POPULATION)
+FROM CITY
