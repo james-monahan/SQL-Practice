@@ -1,2 +1,2 @@
 # SQL-Practice  
--HackerRank Challenges
+Solutions to Various HackerRank and Codewars Challenges
