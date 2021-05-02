@@ -29,3 +29,15 @@ FROM people
 GROUP BY clan
 ORDER BY total_points DESC
 
+*/Fix query:totaling the number of sales on a given day grouped by 
+each department name and then each day. */
+
+SELECT 
+  s.transaction_date::DATE AS day,
+  d.name AS department,
+  COUNT(s.id) AS sale_count
+  FROM department AS d
+    JOIN sale s on d.id = s.department_id
+  GROUP BY day, department
+  ORDER BY day ASC
+
