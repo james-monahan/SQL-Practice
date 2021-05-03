@@ -1,0 +1,36 @@
+TABLES
+
+CREATE TABLE {table_name} (
+{column_name_1} {data_type_1} {column_constraint_1},
+);
+
+CREATE TABLE {table_name} AS (
+{select_query}
+);
+
+ALTER TABLE {table_name}
+ADD (DROP) COLUMN {column_name} {data_type};
+
+INSERT INTO {table_name} (
+  {column_1], {column_2}, …{column_last}
+)
+VALUES (
+  {column_value_1}, {column_value_2},
+   … {column_value_last}
+);
+
+UPDATE {table_name}
+SET {column_1} = {column_value_1},
+    {column_2} = {column_value_2},
+    …
+    {column_last} = {{column_value_last}}
+WHERE
+  {conditional};
+  
+DELETE FROM {table_name}
+WHERE {conditional};
+
+#keep table, delete contents
+TRUNCATE TABLE customers;
+
+DROP TABLE {table_name};
