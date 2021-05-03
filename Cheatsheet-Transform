@@ -1,0 +1,68 @@
+WHERE (NOT) IN (values)
+
+
+IS (NOT) NULL
+
+
+CASE WHEN condition1 THEN value1
+WHEN condition2 THEN value2
+WHEN conditionX THEN valueX
+ELSE else_value END;
+
+
+The COALESCE() function returns the first non-null value in a list. (filling na)
+SELECT 
+  COALESCE(phone, 'NO PHONE') as phone
+FROM 
+  customers
+
+The NULLIF() function returns NULL if two expressions are equal, otherwise it returns the first expression.
+SELECT customer_id,
+        NULLIF(title, 'Honorable') as title,
+
+LEAST / GREATEST compare and return value
+SELECT 
+  LEAST(600.00, base_msrp) as base_msrp
+
+
+DISTINCT ON query if multiple columns have the same value for distinct_column
+ If there are multiple users with the same first name, then the user who was 
+ hired first by the company will be pulled by the query.
+SELECT DISTINCT ON (first_name)
+  *
+FROM 
+  salespeople
+ORDER BY 
+  first_name, hire_date;
+ 
+AGG FUNCTIONS
+  COUNT, MIN, MAX, SUM, AVG, STDDEV, VAR, REGR_SLOPE(x,y), REGR_INTERCEPT(x,y), CORR(x,y)
+  
+COMBINE AGGREGATES WITH DATA
+-use UNION ALL, NULL for aggregate
+OR GROUPING SETS:
+SELECT 
+  state, 
+  gender, 
+  COUNT(*)
+FROM 
+  customers
+GROUP BY GROUPING SETS (
+  (state),
+  (gender),
+  (state, gender)
+)
+ORDER BY 1, 2
+
+ORDERED SET AGGREGATES
+MODE, Percentile_count, Percentile_disc
+
+SELECT 
+  PERCENTILE_CONT(0.5) 
+  WITHIN GROUP (ORDER BY base_msrp) 
+  AS median
+FROM 
+  products;
+  
+STOP HAVING CLAUSE
+  
