@@ -64,5 +64,52 @@ SELECT
 FROM 
   products;
   
-STOP HAVING CLAUSE
+WINDOW FUNCTIONS 
+SELECT 
+  SUM(CASE WHEN {column1} 
+  IS NULL OR {column1} 
+  IN ({missing_values}) 
+  THEN 1 
+  ELSE 0 END)::FLOAT/COUNT(*)
+FROM 
+  {table1}
   
+WINDOW FUNCTIONS OVER SAME WINDOW (alias the window)
+SELECT 
+  customer_id, title, 
+  first_name, last_name, gender,
+  COUNT(*) OVER w as total_customers,
+  SUM(CASE WHEN title IS NOT NULL THEN 1 ELSE 0 END)
+  OVER w as total_customers_title
+FROM 
+  customers
+WINDOW w AS (PARTITION BY gender ORDER BY customer_id)
+ORDER BY customer_id;
+
+Stats With Windows
+ROW_NUMBER, RANK, DENSE_RANK, NTILE(buckets), LAG(col, offset), LEAD(col, offset)
+
+WINDOW FRAME  
+SELECT {columns},
+{window_func} OVER (PARTITION BY {partition_key} 
+ORDER BY {order_key} {range or rows} 
+BETWEEN {frame_start} AND {frame_end})
+FROM {table1};
+
+To determine moving average
+moving_average_calculation_7 AS (
+  SELECT 
+    sales_transaction_date, total_sales,
+    AVG(total_sales) 
+    OVER (ORDER BY 
+      sales_transaction_date 
+      ROWS BETWEEN 7 PRECEDING (FOLLOWING)
+      and CURRENT ROW) AS sales_moving_average_7,
+      ROW_NUMBER() OVER (ORDER BY sales_transaction_date) as row_number
+      
+SELECT 
+  sales_transaction_date, total_sales,
+  MAX(total_sales) 
+  OVER (ORDER BY sales_transaction_date ROWS BETWEEN 30 PRECEDING and 1 PRECEDING)
+  AS max_sales_30
+
