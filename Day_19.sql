@@ -21,7 +21,7 @@ SELECT
   has had a sale with a price over 90.00 dollars BUT the sql MUST 
   use the WITH statement which will be used to select all columns 
   from sales where the price is greater than 90.00, you must call 
-  this sub-query special_sales./*
+  this sub-query special_sales.*/
   
 WITH special_sales AS
 (SELECT department_id
