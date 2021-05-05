@@ -1,0 +1,62 @@
+DATETIME:
+
+SHOW (keyword) DateStyle;
+SET DateStyle='ISO, MDY';
+
+KEYWORDS
+SELECT current_date;
+SELECT now() AT TIME ZONE 'EST';
+EXTRACT(year / month / day FROM col)
+EXTRACT(dow / week / quarter FROM col)
+#ROUND VALUE AS FLOOR
+SELECT NOW(), DATE_TRUNC('month', NOW()); use in groupby 
+SELECT INTERVAL '5 days';
+SELECT TIMESTAMP '2016-03-01 00:00:00' + INTERVAL '7 days' AS new_date; (other math operations too)
+SELECT DATE '2016-03-01' + 7 AS new_date; (timesamp more precise)
+
+
+Latitude and Longitude:
+(install)
+CREATE EXTENSION cube;
+CREATE EXTENSION earthdistance;
+
+SELECT point(longitude, latitude)
+( longitude first and then latitude ) like (x, y)
+
+SELECT point(-90, 38) <@> point(-91, 37) AS distance_in_miles;
+
+SELECT
+    AVG(distance) AS avg_dist,
+    PERCENTILE_DISC(0.5) WITHIN GROUP (ORDER BY distance) 
+    AS median_dist
+FROM closest_dealerships;
+
+
+ARRAYS:
+SELECT ARRAY['Lemon', 'Bat Limited Edition'] AS example_purchased_products;
+#put all unique into an array
+SELECT product_type, ARRAY_AGG(DISTINCT model) AS models FROM products GROUP BY 1;
+SELECT product_type, ARRAY_AGG(model ORDER BY year) AS models FROM products GROUP BY 1;
+SELECT UNNEST(ARRAY[123, 456, 789]) AS example_ids;
+SELECT STRING_TO_ARRAY('hello there how are you?', ' ');
+#concat array of strings
+SELECT ARRAY_TO_STRING(ARRAY['Lemon', 'Bat Limited Edition'], ', ')  AS example_purchased_products;
+concatenate - array_cat()
+append to array_append(array, val)
+ISIN 3 = ANY(ARRAY[1,21]) return false
+&& checks overlap, @> check if contains
+EXAMPLE
+SELECT
+  super_email_seq.id AS superset_id,
+  sub_email_seq.id AS subset_id
+FROM top_email_sequences AS super_email_seq
+CROSS JOIN top_email_sequences AS sub_email_seq
+WHERE super_email_seq.email_sequence @> sub_email_seq.email_sequence
+AND super_email_seq.id != sub_email_seq.id;
+
+
+
+
+
+
+
