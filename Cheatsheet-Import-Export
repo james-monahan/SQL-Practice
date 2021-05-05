@@ -1,0 +1,62 @@
+Dump to csv
+COPY (SELECT * FROM customers LIMIT 5) TO STDOUT WITH CSV HEADER;
+COPY (SELECT * FROM customers LIMIT 5) TO '/path/to/my_file.csv' WITH CSV HEADER;
+
+Launch psql
+psql -h my_host -p 5432 -d my_database -U my_username
+\copy (SELECT * FROM customers LIMIT 5) TO 'my_file.csv' WITH CSV HEADER;
+\copy customers TO 'my_file.csv' WITH CSV HEADER DELIMITER ',' NULL '' QUOTE '"'
+
+Python 
+pip install psycopg2
+import psycopg2
+with psycopg2.connect(host="my_host", user="my_username", password="my_password", dbname="zoomzoom", port=5432) as conn:
+  with conn.cursor() as cur:
+    cur.execute("SELECT * FROM customers LIMIT 5")
+    records = cur.fetchall()
+records
+
+from sqlalchemy import create_engine
+import pandas as pd
+cnxn_string = ("postgresql+psycopg2://{username}:{pswd}"
+               "@{host}:{port}/{database}")
+print(cnxn_string)
+
+engine = create_engine(cnxn_string.format(
+    username="your_username",
+    pswd="your_password",
+    host="your_host",
+    port=5432,
+    database="your_database_name")) 
+engine.execute("SELECT * FROM customers LIMIT 2;").fetchall()
+customers_data = pd.read_sql_table('customers', engine)
+
+df.to_sql('top_cities_data', engine,\
+      index=False, if_exists='replace')
+
+IMPROVE WRITE SPEED
+import csv
+from io import StringIO
+def psql_insert_copy(table, conn, keys, data_iter):
+  # gets a DBAPI connection that can provide a cursor
+  dbapi_conn = conn.connection 
+  with dbapi_conn.cursor() as cur:
+   s_buf = StringIO()
+   writer = csv.writer(s_buf)
+   writer.writerows(data_iter)
+   s_buf.seek(0)
+   columns = ', '.join('"{}"'.format(k) for k in keys)
+   if table.schema:
+    table_name = '{}.{}'.format(table.schema, table.name)
+   else:
+    table_name = table.name
+   sql = 'COPY {} ({}) FROM STDIN WITH CSV'.format(table_name, columns)
+   cur.copy_expert(sql=sql, file=s_buf)
+--THEN--
+top_cities_data.to_sql('top_cities_data', engine,
+        index=False, if_exists='replace',
+        method=psql_insert_copy)
+
+PASSWORD MANAGEMENT
+.pgpass
+chmod 0600 ~/.pgpass
