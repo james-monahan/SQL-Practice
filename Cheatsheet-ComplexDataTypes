@@ -54,9 +54,67 @@ CROSS JOIN top_email_sequences AS sub_email_seq
 WHERE super_email_seq.email_sequence @> sub_email_seq.email_sequence
 AND super_email_seq.id != sub_email_seq.id;
 
+JSON:
+SELECT row_to_json(c, TRUE) FROM customers c limit 1;
 
+SELECT
+    '{
+         "a": 1,
+         "b": 2,
+         "c": 3
+     }'::JSON -> 'b' AS data;
+#value / element in list / value
+SELECT
+    '{
+         "a": 1,
+         "b": [
+             {"d": 4},
+             {"d": 6},
+             {"d": 4}
+    ],
+         "c": 3
+     }'::JSON #> ARRAY['b', '1', 'd'] AS data;
+     
+select jsonb_insert('{"a":1,"b":"foo"}', ARRAY['c'], '2');
+select JSONB_ARRAY_ELEMENTS(customer_json -> 'sales') AS sale_json
 
+TEXT ANALYTICS:
+SELECT STRING_TO_ARRAY('Danny and Matt are friends.', ' ');
+#'g' flag means global
+SELECT REGEXP_REPLACE('Danny and Matt are friends.', '[!,.?-]', ' ', 'g');
+#stemming
+SELECT TS_LEXIZE('english_stem', 'running');
+#use UNNEST to parse into individual words
+SELECT UNNEST(STRING_TO_ARRAY(feedback, ' ')) AS word, rating FROM customer_survey limit 10;
+#combine
+SELECT
+    (TS_LEXIZE('english_stem',UNNEST(STRING_TO_ARRAY(
+     REGEXP_REPLACE(feedback, '[^a-zA-Z]+', ' ', 'g'),' ')  )))[1] AS token,
+#case insensitive
+SELECT * FROM customer_survey WHERE feedback ILIKE '%pop%';
 
+#over entire document, removes stop words
+SELECT
+    feedback,
+    to_tsvector('english', feedback) AS tsvectorized_feedback
+FROM table
 
+SELECT to_tsquery('english', 'lemon & scooter');
+#to_tsquery accepts Boolean syntax, such as | for or and & for and. It also accepts ! for not.
 
+SELECT plainto_tsquery('english', 'lemon') && plainto_tsquery('english', 'bat') || plainto_tsquery('english', 'chi');
+The && operator will produce a query that requires the left query and the right query, while the || operator will produce a query that matches either the left or the right tsquery object
 
+We can query a ts_vector object using a ts_query object using the @@ operator.
+SELECT * FROM _
+WHERE to_tsvector('english', feedback) @@ plainto_tsquery('english', 'lemon scooter');
+
+#Materialized view to precomput the vectors for more efficent querying
+CREATE MATERIALIZED VIEW customer_survey_search AS (
+    SELECT
+        rating,
+        feedback,
+        to_tsvector('english', feedback)
+            || to_tsvector('english', rating::text) AS searchable
+    FROM customer_survey
+);
