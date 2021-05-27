@@ -54,7 +54,7 @@ GROUP BY 1;
 */ Write a query to find which gender gives a higher 
 average review score when writing reviews as guests. 
 Use the `from_type` column to identify guest reviews. 
-Output the gender and their average review score. /*
+Output the gender and their average review score. */
 
 SELECT g.gender, AVG(r.review_score) AS average
 FROM airbnb_reviews r
